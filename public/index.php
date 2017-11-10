@@ -14,12 +14,14 @@ function handle()
 {	
 	global $map;
 
+	//check if the user is going back to the main menu
 	$pos 				= strripos($_POST['text'], '*00');
 
 	if ($pos !== false) {
 		$_POST['text'] 	= substr($_POST['text'], $pos + 3);
 	}
 
+	// remove the leading * in the text if it exits
 	$_POST['text'] 		= removeStar($_POST['text']);
 
 	if (empty($_POST['text']) || $_POST['text'] === '00') {
@@ -29,6 +31,7 @@ function handle()
 		$item 			= current($input_array);
 
 		if (array_key_exists($item, $map)) {
+			// return call($item);
 			return base(call($item), ['00']);
 		} else {
 			return "END Invalid option";
@@ -56,6 +59,7 @@ function base($reply = "", $only = [])
 
 	$reply 		.= " \n";
 
+	// build the menu
 	foreach ($map as $key => $value) {
 		if (empty($only) || in_array($key, $only)) {
 			if ($key === '00')
@@ -82,9 +86,15 @@ function call ($index)
 		]
 	]);
 
-	$_POST['text'] 	= str_replace($index, "", $_POST['text']);
+	$pos = strpos($_POST['text'], $index);
 
-	$_POST['text'] 	= removeStar($_POST['text']);
+	if ($pos !== false) {
+	    $_POST['text'] 		= substr_replace($_POST['text'], "", $pos, strlen($index));
+	}
+
+	$_POST['text'] 			= removeStar($_POST['text']);
+
+	$_POST['serviceCode'] 	= substr_replace($_POST['serviceCode'], "*$index", -1, 0);
 
 	$response 		= $client->post('', ['form_params' => $_POST]);
 
