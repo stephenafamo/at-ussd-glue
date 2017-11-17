@@ -18,7 +18,11 @@ function handle()
 	$pos 				= strripos($_POST['text'], '*00');
 
 	if ($pos !== false) {
-		$_POST['text'] 	= substr($_POST['text'], $pos + 3);
+		$new_text	 	= substr($_POST['text'], $pos + 3);
+
+		if (empty($new_text) || substr($new_text, 0, 1) === '*') {
+			$_POST['text'] 	= $new_text;
+		}
 	}
 
 	// remove the leading * in the text if it exits
@@ -89,7 +93,7 @@ function call ($index)
 	$pos = strpos($_POST['text'], $index);
 
 	if ($pos !== false) {
-	    $_POST['text'] 		= substr_replace($_POST['text'], "", $pos, strlen($index));
+		$_POST['text'] 		= substr_replace($_POST['text'], "", $pos, strlen($index));
 	}
 
 	$_POST['text'] 			= removeStar($_POST['text']);
